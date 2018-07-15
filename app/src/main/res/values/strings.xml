@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="daily_option">DAILY</string>
+    <string name="custom_option">CUSTOM</string>
+    <string name="advance_option">ADVANCE</string>
+    <string name="save_option">SAVE</string>
+    <string name="reset_option">RESET</string>
+    <string name="save_messg">The given configuration is save successfully!!!</string>
+    <string name="basic_fet_title">DAILY</string>
+    <string name="basic_fet_message">Choose this option to water plants daily twice.</string>
+    <string name="basic_fet_morning_time">Morning</string>
+    <string name="basic_fet_evening_time">Evening</string>
+    <string name="basic_fet_mor_hr">BasicFetMornHr</string>
+    <string name="basic_fet_mor_min">BasicFetMornMin</string>
+    <string name="basic_fet_eve_hr">BasicFetEveHr</string>
+    <string name="basic_fet_eve_min">BasicFetEveMin</string>
+</resources>
