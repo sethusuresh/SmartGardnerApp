@@ -11,7 +11,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sethu.myapplication.DTO.BluetoothReqDTO;
+
+import Util.BluetoothUtil;
+
 public class MainActivity extends AppCompatActivity {
+
+    BluetoothUtil bluetoothUtil = new BluetoothUtil();
+    BluetoothReqDTO bluetoothReqDTO = new BluetoothReqDTO();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +63,17 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select an option!!!", Toast.LENGTH_SHORT).show();
         }
 
+        bluetoothReqDTO.setMorningTime(morningTime);
+        bluetoothReqDTO.setEveningTime(eveningTime);
+        bluetoothReqDTO.setDaysOfWeek(daysOfWeek);
+
         if(canProceed){
             //show user selection
             TextView selectedBasicConfig = findViewById (R.id.selected_config);
             selectedBasicConfig.setText(daysOfWeek+"\nMORNING: "+ morningTime + " am\n" + "EVENING: " + eveningTime +" pm");
             //sending to arduino
+            bluetoothUtil.initializeBt();
+            bluetoothUtil.transmitData(bluetoothReqDTO);
         }
     }
 
