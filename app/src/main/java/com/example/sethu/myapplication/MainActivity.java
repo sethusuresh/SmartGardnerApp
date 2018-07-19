@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button saveButton = findViewById(R.id.SAVE_BUTTON);
         saveButton.setEnabled(false);
+        RadioGroup radioGroup = findViewById(R.id.radioGroup);
+        RadioButton dailyRadioButton = (RadioButton) radioGroup.getChildAt(0);
+        dailyRadioButton.setChecked(true);
     }
 
     public void saveConfig(View view) throws IOException {
