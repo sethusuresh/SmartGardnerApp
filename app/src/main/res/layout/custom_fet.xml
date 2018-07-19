@@ -24,13 +24,12 @@
         android:layout_width="91dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginRight="40dp"
+        android:layout_marginEnd="27dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.639" />
+        app:layout_constraintVertical_bias="0.635" />
 
     <Spinner
         android:id="@+id/cust_mor_hr_spinner"
@@ -113,13 +112,13 @@
         android:layout_width="66dp"
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="40dp"
+        android:layout_marginStart="28dp"
         android:layout_marginTop="8dp"
         android:text="@string/eve"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.639" />
+        app:layout_constraintVertical_bias="0.637" />
 
     <Spinner
         android:id="@+id/cust_eve_hr_spinner"

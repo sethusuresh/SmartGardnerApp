@@ -1,11 +1,16 @@
 package com.example.sethu.myapplication;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -13,24 +18,35 @@ import android.widget.Toast;
 
 import com.example.sethu.myapplication.DTO.BluetoothReqDTO;
 
-import Util.BluetoothUtil;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    BluetoothUtil bluetoothUtil = new BluetoothUtil();
     BluetoothReqDTO bluetoothReqDTO = new BluetoothReqDTO();
+    int REQUEST_ENABLE_BT = 10;
+    BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    private final String ARDUINO_ADDRESS = "20:15:11:23:93:85"; //MAC Address of Bluetooth Module
+    BluetoothDevice device;
+    BluetoothSocket socket;
+    OutputStream outputStream;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button saveButton = findViewById(R.id.SAVE_BUTTON);
+        saveButton.setEnabled(false);
     }
 
-    public void saveConfig(View view){
+    public void saveConfig(View view) throws IOException {
         String morningTime = null;
         String eveningTime = null;
         String daysOfWeek = null;
-        boolean canProceed = true;
+        boolean canProceed;
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
         int selectedRadioId = radioGroup.getCheckedRadioButtonId();
         RadioButton radioButton = findViewById(selectedRadioId);
@@ -72,8 +88,7 @@ public class MainActivity extends AppCompatActivity {
             TextView selectedBasicConfig = findViewById (R.id.selected_config);
             selectedBasicConfig.setText(daysOfWeek+"\nMORNING: "+ morningTime + " am\n" + "EVENING: " + eveningTime +" pm");
             //sending to arduino
-            bluetoothUtil.initializeBt();
-            bluetoothUtil.transmitData(bluetoothReqDTO);
+            transmitData(bluetoothReqDTO);
         }
     }
 
@@ -89,5 +104,77 @@ public class MainActivity extends AppCompatActivity {
     public void customConfig(View view){
         Intent intent = new Intent(MainActivity.this, CustomFetActivity.class);
         startActivity(intent);
+    }
+
+    public void connectBluetooth(View view){
+        //connecting to arduino bluetooth
+        initializeBt();
+    }
+
+    private void initializeBt(){
+        if(bluetoothAdapter != null){   //checks if BT is supported for device
+            if(!bluetoothAdapter.isEnabled()){   //checks if BT is enabled
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            }
+            else{
+                if(checkDeviceConnected()){
+                    Toast.makeText(this, "Bluetooth Connected Successfully", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+        else{
+            Toast.makeText(this, "Sorry Your device doesn't support Bluetooth", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            Button saveButton = findViewById(R.id.SAVE_BUTTON);
+            super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == REQUEST_ENABLE_BT  && resultCode  == RESULT_OK) {
+                if(checkDeviceConnected()){ //check if connected to arduino
+                    createBtConnection();
+                    saveButton.setEnabled(true);
+                }
+            }
+        } catch (Exception ex) {
+            Log.e("Bluetooth",ex.toString());
+            Toast.makeText(this, "Error in Bluetooth Connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean checkDeviceConnected(){
+        Set<BluetoothDevice> connectedDevices = bluetoothAdapter.getBondedDevices();
+        boolean connection = false;
+        if(connectedDevices.isEmpty())  //Checks for paired bluetooth devices
+        {
+            Toast.makeText(this, "Please pair the device from phone settings", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            for(BluetoothDevice connectedDevice : connectedDevices)
+            {
+                if(connectedDevice.getAddress().equals(ARDUINO_ADDRESS))
+                {
+                    device = connectedDevice;
+                    connection = true;
+                    break;
+                }
+            }
+        }
+        return connection;
+    }
+
+    private void createBtConnection() throws IOException {
+        socket = device.createRfcommSocketToServiceRecord(PORT_UUID); //Creates a socket to handle the outgoing connection
+        socket.connect();
+        Toast.makeText(this, "Bluetooth Connected Successfully", Toast.LENGTH_SHORT).show();
+        outputStream = socket.getOutputStream();
+    }
+
+    private void transmitData(BluetoothReqDTO bluetoothReqDTO) throws IOException {
+        String txData = bluetoothReqDTO.getDaysOfWeek()+"|"+bluetoothReqDTO.getMorningTime()+"|"+bluetoothReqDTO.getEveningTime();
+        outputStream.write(txData.getBytes());
     }
 }
