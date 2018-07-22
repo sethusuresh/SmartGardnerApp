@@ -25,32 +25,30 @@
         android:layout_width="138dp"
         android:layout_height="48dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:hint="@string/daily_option"
         android:onClick="dailyConfig"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/radioGroup"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.316" />
+        app:layout_constraintVertical_bias="0.305" />
 
     <Button
         android:id="@+id/CUST_BUTTON"
         android:layout_width="138dp"
         android:layout_height="48dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:hint="@string/custom_option"
         android:onClick="customConfig"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/radioGroup"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/DAILY_BUTTON" />
 
@@ -59,15 +57,13 @@
         android:layout_width="138dp"
         android:layout_height="48dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="28dp"
         android:hint="@string/advance_option"
         android:onClick="advancedConfig"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/radioGroup"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/CUST_BUTTON" />
 
@@ -96,46 +92,48 @@
         android:id="@+id/SAVE_BUTTON"
         android:layout_width="154dp"
         android:layout_height="66dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="452dp"
+        android:layout_marginTop="8dp"
         android:hint="@string/save_option"
         android:onClick="saveConfig"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/RESET_BUTTON"
-        app:layout_constraintHorizontal_bias="0.869"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.899" />
 
     <Button
         android:id="@+id/RESET_BUTTON"
         android:layout_width="154dp"
         android:layout_height="66dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="452dp"
+        android:layout_marginTop="8dp"
         android:hint="@string/reset_option"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.899" />
 
 
     <RadioGroup
         android:id="@+id/radioGroup"
-        android:layout_width="93dp"
-        android:layout_height="222dp"
+        android:layout_width="63dp"
+        android:layout_height="229dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/RESET_BUTTON"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.818"
-        app:layout_constraintStart_toEndOf="@+id/CUST_BUTTON"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.434">
+        app:layout_constraintHorizontal_bias="0.91"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.426">
 
 
         <RadioButton
@@ -147,7 +145,7 @@
         <RadioButton
             android:id="@+id/RadioCust"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="9dp"
             android:layout_weight="1" />
 
         <RadioButton
@@ -190,20 +188,21 @@
         app:layout_constraintVertical_bias="0.157" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/bluetoothButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@color/colorPrimaryDark"
         android:onClick="connectBluetooth"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.791"
+        app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.138"
+        app:layout_constraintVertical_bias="0.151"
         app:srcCompat="@android:drawable/stat_sys_data_bluetooth" />
 
 </android.support.constraint.ConstraintLayout>

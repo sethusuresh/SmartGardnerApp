@@ -6,11 +6,13 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
         RadioButton dailyRadioButton = (RadioButton) radioGroup.getChildAt(0);
         dailyRadioButton.setChecked(true);
+        ImageView bluetoothButton = findViewById(R.id.bluetoothButton);
+        bluetoothButton.setBackgroundColor(Color.rgb(105, 105, 105));
     }
 
     public void saveConfig(View view) throws IOException {
@@ -162,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     device = connectedDevice;
                     connection = true;
+                    ImageView bluetoothButton = findViewById(R.id.bluetoothButton);
+                    bluetoothButton.setBackgroundColor(Color.rgb(0, 0, 255));
                     break;
                 }
             }
