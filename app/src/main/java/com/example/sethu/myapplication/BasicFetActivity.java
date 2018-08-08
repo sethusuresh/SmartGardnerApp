@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.content.res.FontResourcesParserCompat;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,8 @@ public class BasicFetActivity extends Activity{
     BasicConfigDTO basicConfigDTO = new BasicConfigDTO();
 
     TimeUtil timeUtil = new TimeUtil();
+    boolean waterMorning = true;
+    boolean waterEvening = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +98,19 @@ public class BasicFetActivity extends Activity{
         TextView selectedBasicConfig = findViewById (R.id.selected_basic_config);
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm a");
         java.sql.Time morningTime = new java.sql.Time(formatter.parse(basicConfigDTO.getMorning_hour()+":"+basicConfigDTO.getMorning_minute()+" am").getTime());
-        basicConfigDTO.setMorningTime(morningTime);
+        if(waterMorning){
+            basicConfigDTO.setMorningTime(morningTime);
+        }
+        else{
+            basicConfigDTO.setMorningTime(null);
+        }
         java.sql.Time eveningTime = new java.sql.Time(formatter.parse(basicConfigDTO.getEvening_hour()+":"+basicConfigDTO.getEvening_minute()+" pm").getTime());
-        basicConfigDTO.setEveningTime(eveningTime);
+        if(waterEvening){
+            basicConfigDTO.setEveningTime(eveningTime);
+        }
+        else{
+            basicConfigDTO.setEveningTime(null);
+        }
         selectedBasicConfig.setText("MORNING: "+ basicConfigDTO.getMorningTime() + " am\n" + "EVENING: " + basicConfigDTO.getEveningTime() +" pm");
         //save to local storage
         SharedPreferences sharedPref = getSharedPreferences("SmartGardnerData",Context.MODE_PRIVATE);
@@ -106,5 +119,22 @@ public class BasicFetActivity extends Activity{
         editor.putString(getString(R.string.basic_fet_evening_time), basicConfigDTO.getEveningTime().toString());
         editor.apply();
         Toast.makeText(this, "new timings saved successfully!!!", Toast.LENGTH_SHORT).show();
+    }
+
+    public void basicFetCheckbox(View view){
+        CheckBox morningCheckbox = findViewById(R.id.dailyMorCheckbox);
+        CheckBox eveningCheckbox = findViewById(R.id.dailyEveCheckbox);
+        if(!morningCheckbox.isChecked()){
+            waterMorning = false;
+        }
+        else{
+            waterMorning = true;
+        }
+        if(!eveningCheckbox.isChecked()){
+            waterEvening = false;
+        }
+        else{
+            waterEvening = true;
+        }
     }
 }
