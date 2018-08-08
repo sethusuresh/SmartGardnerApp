@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button saveButton = findViewById(R.id.SAVE_BUTTON);
         saveButton.setEnabled(false);
+        Button instWaterButton = findViewById(R.id.INST_WATER);
+        instWaterButton.setEnabled(false);
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
         RadioButton dailyRadioButton = (RadioButton) radioGroup.getChildAt(0);
         dailyRadioButton.setChecked(true);
@@ -138,11 +140,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
             Button saveButton = findViewById(R.id.SAVE_BUTTON);
+            Button instWaterButton = findViewById(R.id.INST_WATER);
             super.onActivityResult(requestCode, resultCode, data);
             if (requestCode == REQUEST_ENABLE_BT  && resultCode  == RESULT_OK) {
                 if(checkDeviceConnected()){ //check if connected to arduino
                     createBtConnection();
                     saveButton.setEnabled(true);
+                    instWaterButton.setEnabled(true);
                 }
             }
         } catch (Exception ex) {
@@ -184,6 +188,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void transmitData(BluetoothReqDTO bluetoothReqDTO) throws IOException {
         String txData = bluetoothReqDTO.getDaysOfWeek()+"|"+bluetoothReqDTO.getMorningTime()+"|"+bluetoothReqDTO.getEveningTime();
+        outputStream.write(txData.getBytes());
+    }
+
+    public void instWaterOption(View view) throws IOException {
+        String txData = "WATER_NOW";
         outputStream.write(txData.getBytes());
     }
 }

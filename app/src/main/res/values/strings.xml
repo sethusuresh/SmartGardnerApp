@@ -4,7 +4,7 @@
     <string name="custom_option">CUSTOM</string>
     <string name="advance_option">ADVANCE</string>
     <string name="save_option">SAVE</string>
-    <string name="reset_option">RESET</string>
+    <string name="inst_water_option">WATER NOW</string>
     <string name="save_messg">The given configuration is save successfully!!!</string>
     <string name="basic_fet_title">DAILY</string>
     <string name="basic_fet_message">Choose this option to water plants daily twice.</string>
