@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.sethu.myapplication.DTO.BasicConfigDTO;
 import com.example.sethu.myapplication.DTO.CustomConfigDTO;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,6 +70,22 @@ public class CustomFetActivity extends Activity{
         Spinner eveningMinuteSpinner = findViewById(R.id.cust_eve_min_spinner);
         eveningMinuteSpinner.setAdapter(minuteAdapter);
         eveningMinuteSpinner.setSelection(userSelectedTime.get(String.valueOf(R.string.cust_fet_eve_min)));
+
+        //setting the checkbox selection
+        CheckBox morningCheckbox = findViewById(R.id.custMornCheckbox);
+        morningCheckbox.setChecked(true);
+        waterMorning = true;
+        if(userSelectedTime.get(String.valueOf(R.string.cust_fet_mor_hr)) == -1){
+            morningCheckbox.setChecked(false);
+            waterMorning = false;
+        }
+        CheckBox eveningCheckbox = findViewById(R.id.custEveCheckbox);
+        eveningCheckbox.setChecked(true);
+        waterEvening = true;
+        if(userSelectedTime.get(String.valueOf(R.string.cust_fet_eve_hr)) == -1){
+            eveningCheckbox.setChecked(false);
+            waterEvening = false;
+        }
     }
 
     private Map<String,Integer> getUserSelectedTime() {
@@ -89,7 +106,14 @@ public class CustomFetActivity extends Activity{
 
         //show user selection
         TextView selectedBasicConfig = findViewById (R.id.selected_cust_config);
-        selectedBasicConfig.setText(daysOfWeek+"\nMORNING: "+ morningTime + " am\n" + "EVENING: " + eveningTime +" pm");
+        String userSelection = "";
+        if(morningHrPos != -1){
+            userSelection = userSelection + "MORNING: "+ morningTime + " am\n" ;
+        }
+        if(eveningHrPos != -1){
+            userSelection = userSelection + "EVENING: " + eveningTime +" pm";
+        }
+        selectedBasicConfig.setText(daysOfWeek + "\n" + userSelection);
 
         return timePosMap;
     }
@@ -126,6 +150,7 @@ public class CustomFetActivity extends Activity{
     }
 
     public void saveCustConfig(View view) throws ParseException {
+        String userConfig = "";
         Spinner morningHourSpinner = findViewById(R.id.cust_mor_hr_spinner);
         Spinner morningMinuteSpinner = findViewById(R.id.cust_mor_min_spinner);
         Spinner eveningHourSpinner = findViewById(R.id.cust_eve_hr_spinner);
@@ -139,22 +164,24 @@ public class CustomFetActivity extends Activity{
         java.sql.Time morningTime = new java.sql.Time(formatter.parse(basicConfigDTO.getMorning_hour()+":"+basicConfigDTO.getMorning_minute()+" am").getTime());
         if(waterMorning){
             basicConfigDTO.setMorningTime(morningTime);
+            userConfig = userConfig + "MORNING: "+ basicConfigDTO.getMorningTime() + " am\n";
         }
         else{
-            basicConfigDTO.setMorningTime(null);
+            basicConfigDTO.setMorningTime(new Time(0,0,0));
         }
         java.sql.Time eveningTime = new java.sql.Time(formatter.parse(basicConfigDTO.getEvening_hour()+":"+basicConfigDTO.getEvening_minute()+" pm").getTime());
         if(waterEvening){
             basicConfigDTO.setEveningTime(eveningTime);
+            userConfig = userConfig + "EVENING: " + basicConfigDTO.getEveningTime() +" pm";
         }
         else{
-            basicConfigDTO.setEveningTime(null);
+            basicConfigDTO.setEveningTime(new Time(0,0,0));
         }
         customConfigDTO.setBasicConfigDTO(basicConfigDTO);
         MaterialDayPicker materialDayPicker = findViewById(R.id.day_picker);
         List<MaterialDayPicker.Weekday> daysSelected = materialDayPicker.getSelectedDays();
-        customConfigDTO.setDay(TextUtils.join(", ",daysSelected));
-        selectedBasicConfig.setText(customConfigDTO.getDay()+"\nMORNING: "+ basicConfigDTO.getMorningTime() + " am\n" + "EVENING: " + basicConfigDTO.getEveningTime() +" pm");
+        customConfigDTO.setDay(TextUtils.join(",",daysSelected));
+        selectedBasicConfig.setText(customConfigDTO.getDay()+ "\n" + userConfig);
         //save to local storage
         SharedPreferences sharedPref = getSharedPreferences("SmartGardnerData",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();

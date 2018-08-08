@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.sethu.myapplication.DTO.BasicConfigDTO;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,6 +63,22 @@ public class BasicFetActivity extends Activity{
         Spinner eveningMinuteSpinner = findViewById(R.id.basic_evening_minute_spinner);
         eveningMinuteSpinner.setAdapter(minuteAdapter);
         eveningMinuteSpinner.setSelection(userSelectedTime.get(String.valueOf(R.string.basic_fet_eve_min)));
+
+        //setting the check box selection
+        CheckBox morningCheckbox = findViewById(R.id.dailyMorCheckbox);
+        morningCheckbox.setChecked(true);
+        waterMorning = true;
+        if(userSelectedTime.get(String.valueOf(R.string.basic_fet_mor_hr)) == -1){
+            morningCheckbox.setChecked(false);
+            waterMorning = false;
+        }
+        CheckBox eveningCheckbox = findViewById(R.id.dailyEveCheckbox);
+        eveningCheckbox.setChecked(true);
+        waterEvening = true;
+        if(userSelectedTime.get(String.valueOf(R.string.basic_fet_eve_hr)) == -1){
+            eveningCheckbox.setChecked(false);
+            waterEvening = false;
+        }
     }
 
     private Map<String,Integer> getUserSelectedTime() {
@@ -81,12 +98,19 @@ public class BasicFetActivity extends Activity{
 
         //show user selection
         TextView selectedBasicConfig = findViewById (R.id.selected_basic_config);
-        selectedBasicConfig.setText("MORNING: "+ morningTime + " am\n" + "EVENING: " + eveningTime +" pm");
-
+        String userSelection = "";
+        if(morningHrPos != -1){
+            userSelection = userSelection + "MORNING: "+ morningTime + " am\n" ;
+        }
+        if(eveningHrPos != -1){
+            userSelection = userSelection + "EVENING: " + eveningTime +" pm";
+        }
+        selectedBasicConfig.setText(userSelection);
         return timePosMap;
     }
 
     public void saveBasicConfig(View view) throws ParseException {
+        String userConfig = "";
         Spinner morningHourSpinner = findViewById(R.id.basic_morning_hour_spinner);
         Spinner morningMinuteSpinner = findViewById(R.id.basic_morning_minute_spinner);
         Spinner eveningHourSpinner = findViewById(R.id.basic_evening_hour_spinner);
@@ -100,18 +124,20 @@ public class BasicFetActivity extends Activity{
         java.sql.Time morningTime = new java.sql.Time(formatter.parse(basicConfigDTO.getMorning_hour()+":"+basicConfigDTO.getMorning_minute()+" am").getTime());
         if(waterMorning){
             basicConfigDTO.setMorningTime(morningTime);
+            userConfig = userConfig + "MORNING: "+ basicConfigDTO.getMorningTime() + " am\n";
         }
         else{
-            basicConfigDTO.setMorningTime(null);
+            basicConfigDTO.setMorningTime(new Time(0,0,0));
         }
         java.sql.Time eveningTime = new java.sql.Time(formatter.parse(basicConfigDTO.getEvening_hour()+":"+basicConfigDTO.getEvening_minute()+" pm").getTime());
         if(waterEvening){
             basicConfigDTO.setEveningTime(eveningTime);
+            userConfig = userConfig + "EVENING: " + basicConfigDTO.getEveningTime() +" pm";
         }
         else{
-            basicConfigDTO.setEveningTime(null);
+            basicConfigDTO.setEveningTime(new Time(0,0,0));
         }
-        selectedBasicConfig.setText("MORNING: "+ basicConfigDTO.getMorningTime() + " am\n" + "EVENING: " + basicConfigDTO.getEveningTime() +" pm");
+        selectedBasicConfig.setText(userConfig);
         //save to local storage
         SharedPreferences sharedPref = getSharedPreferences("SmartGardnerData",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
