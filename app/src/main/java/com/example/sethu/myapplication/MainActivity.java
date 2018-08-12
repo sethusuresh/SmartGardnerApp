@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void transmitData(BluetoothReqDTO bluetoothReqDTO) throws IOException {
-        String txData = bluetoothReqDTO.getDaysOfWeek()+"|"+bluetoothReqDTO.getMorningTime()+"|"+bluetoothReqDTO.getEveningTime();
+        String txData = bluetoothReqDTO.getDaysOfWeek()+"|"+bluetoothReqDTO.getMorningTime()+"|"+bluetoothReqDTO.getEveningTime()+"|";
         outputStream.write(txData.getBytes());
     }
 
