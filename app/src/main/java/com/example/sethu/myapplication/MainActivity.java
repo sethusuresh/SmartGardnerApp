@@ -10,8 +10,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,19 +25,18 @@ import com.example.sethu.myapplication.DTO.BluetoothReqDTO;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
-
     BluetoothReqDTO bluetoothReqDTO = new BluetoothReqDTO();
     int REQUEST_ENABLE_BT = 10;
     BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-    private final String ARDUINO_ADDRESS = "20:15:11:23:93:85"; //MAC Address of Bluetooth Module
-    BluetoothDevice device;
     BluetoothSocket socket;
     OutputStream outputStream;
+    ArrayList<BluetoothDevice> BTDeviceList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,21 +117,19 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void connectBluetooth(View view){
+    public void connectBluetooth(View view) {
         //connecting to arduino bluetooth
         initializeBt();
     }
 
-    private void initializeBt(){
+    private void initializeBt() {
         if(bluetoothAdapter != null){   //checks if BT is supported for device
             if(!bluetoothAdapter.isEnabled()){   //checks if BT is enabled
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             }
             else{
-                if(checkDeviceConnected()){
-                    Toast.makeText(this, "Bluetooth Connected Successfully", Toast.LENGTH_SHORT).show();
-                }
+                startBTDiscovery();
             }
         }
         else{
@@ -139,15 +139,10 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
-            Button saveButton = findViewById(R.id.SAVE_BUTTON);
-            Button instWaterButton = findViewById(R.id.INST_WATER);
+
             super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == REQUEST_ENABLE_BT  && resultCode  == RESULT_OK) {
-                if(checkDeviceConnected()){ //check if connected to arduino
-                    createBtConnection();
-                    saveButton.setEnabled(true);
-                    instWaterButton.setEnabled(true);
-                }
+            if ((requestCode == REQUEST_ENABLE_BT) && (resultCode == RESULT_OK)) {
+                startBTDiscovery();
             }
         } catch (Exception ex) {
             Log.e("Bluetooth",ex.toString());
@@ -155,32 +150,49 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean checkDeviceConnected(){
-        Set<BluetoothDevice> connectedDevices = bluetoothAdapter.getBondedDevices();
-        boolean connection = false;
-        if(connectedDevices.isEmpty())  //Checks for paired bluetooth devices
-        {
-            Toast.makeText(this, "Please pair the device from phone settings", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            for(BluetoothDevice connectedDevice : connectedDevices)
-            {
-                if(connectedDevice.getAddress().equals(ARDUINO_ADDRESS))
-                {
-                    device = connectedDevice;
-                    connection = true;
-                    ImageView bluetoothButton = findViewById(R.id.bluetoothButton);
-                    bluetoothButton.setBackgroundColor(Color.rgb(0, 0, 255));
-                    break;
-                }
-            }
-        }
-        return connection;
+    private void startBTDiscovery(){
+        //getting all paired devices
+        BTDeviceList.clear();
+        BTDeviceList.addAll(bluetoothAdapter.getBondedDevices());
+        createContextForPairedDevices();
     }
 
-    private void createBtConnection() throws IOException {
-        socket = device.createRfcommSocketToServiceRecord(PORT_UUID); //Creates a socket to handle the outgoing connection
+    public void createContextForPairedDevices(){
+        ImageButton BTButton = findViewById(R.id.bluetoothButton);
+        registerForContextMenu(BTButton);
+        openContextMenu(BTButton);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("BLUETOOTH DEVICES");
+        for(BluetoothDevice device : BTDeviceList){
+            menu.add(0, v.getId(), 0, device.getName());
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Button saveButton = findViewById(R.id.SAVE_BUTTON);
+        Button instWaterButton = findViewById(R.id.INST_WATER);
+        BluetoothDevice selectedDevice = BTDeviceList.stream().filter(device -> device.getName().equalsIgnoreCase(item.getTitle().toString())).collect(Collectors.toList()).get(0);
+        ImageView bluetoothButton = findViewById(R.id.bluetoothButton);
+        try {
+            createBtConnection(selectedDevice);
+            saveButton.setEnabled(true);
+            instWaterButton.setEnabled(true);
+            bluetoothButton.setBackgroundColor(Color.rgb(0, 0, 255));
+        } catch (IOException e) {
+            Toast.makeText(this, "Bluetooth Connection Failed", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void createBtConnection(BluetoothDevice selectedDevice) throws IOException {
+        String temp = selectedDevice.getUuids()[0].getUuid().toString();
+        socket = selectedDevice.createRfcommSocketToServiceRecord(PORT_UUID); //Creates a socket to handle the outgoing connection
         socket.connect();
         Toast.makeText(this, "Bluetooth Connected Successfully", Toast.LENGTH_SHORT).show();
         outputStream = socket.getOutputStream();
